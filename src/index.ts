@@ -1,6 +1,7 @@
 import lineNotification from "./routers/line-notification";
 import puppeteer from "puppeteer";
 import dotenv from "dotenv";
+import { onChange } from "./helpers/checkOnChange";
 
 interface class_activity_pageType {
   [key: string]: {
@@ -38,65 +39,72 @@ dotenv.config();
   });
 
   var class_activity_page: class_activity_pageType = {};
+  var prev_class_activity_page: class_activity_pageType = { "CSS 222-2": [] };
 
-  for (let i = 0; i < class_activity.length; i++) {
-    await page.goto(class_activity[i], {
-      timeout: 20000,
-      waitUntil: ["load", "domcontentloaded", "networkidle0", "networkidle2"],
-    });
+  setInterval(async () => {
+    console.log("Checking for new assignment...");
 
-    const class_name = await page.evaluate(() => {
-      return document
-        .querySelector('ol[class="breadcrumb"] > li:nth-child(2) > a')
-        ?.textContent?.replace(/\n/g, "")
-        .trim();
-    });
-
-    const assignment_all = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll("tr")).map((item, index) => {
-        if (index === 0) {
-          return null;
-        }
-        return {
-          title: item
-            .querySelector(
-              `${index === 1 ? "th" : "td:nth-child(1)"} > div > div > a > span`
-            )
-            ?.textContent?.replace(/\n/g, "")
-            .trim(),
-          publish_date: item
-            .querySelector(
-              `${index === 0 ? "td:nth-child(1)" : "td:nth-child(2)"} > span`
-            )
-            ?.textContent?.replace(/\n/g, "")
-            .trim(),
-          due_date: item
-            .querySelector(
-              `${index === 0 ? "td:nth-child(2)" : "td:nth-child(3)"}> span`
-            )
-            ?.textContent?.replace(/\n/g, "")
-            .trim(),
-        };
+    await page.goto(class_activity[0]);
+    for (let i = 0; i < class_activity.length; i++) {
+      await page.goto(class_activity[i], {
+        timeout: 20000,
+        waitUntil: ["load", "domcontentloaded", "networkidle0", "networkidle2"],
       });
-    });
 
-    //@ts-ignore
-    class_activity_page[class_name] = assignment_all;
-  }
+      const class_name = await page.evaluate(() => {
+        return document
+          .querySelector('ol[class="breadcrumb"] > li:nth-child(2) > a')
+          ?.textContent?.replace(/\n/g, "")
+          .trim();
+      });
 
-  for (const [key, value] of Object.entries(class_activity_page)) {
-    if (value !== null) {
-      for (let i = 0; i < value.length; i++) {
-        if (value[i] !== null) {
-          const { title, publish_date, due_date } = value[i];
-          if (title !== null && publish_date !== null && due_date !== null) {
-            const message = `${key} - ${title} - ${publish_date} - ${due_date}`;
-            lineNotification(message);
+      const assignment_all = await page.evaluate(() => {
+        return Array.from(document.querySelectorAll("tr")).map(
+          (item, index) => {
+            if (index === 0) {
+              return {
+                title: "",
+                publish_date: "",
+                due_date: "",
+              };
+            }
+            return {
+              title: item
+                .querySelector(
+                  `${
+                    index === 1 ? "th" : "td:nth-child(1)"
+                  } > div > div > a > span`
+                )
+                ?.textContent?.replace(/\n/g, "")
+                .trim(),
+              publish_date: item
+                .querySelector(
+                  `${
+                    index === 0 ? "td:nth-child(1)" : "td:nth-child(2)"
+                  } > span`
+                )
+                ?.textContent?.replace(/\n/g, "")
+                .trim(),
+              due_date: item
+                .querySelector(
+                  `${index === 0 ? "td:nth-child(2)" : "td:nth-child(3)"}> span`
+                )
+                ?.textContent?.replace(/\n/g, "")
+                .trim(),
+            };
           }
-        }
-      }
+        );
+      });
+
+      //@ts-ignore
+      class_activity_page[class_name] = assignment_all;
     }
-  }
+
+    onChange(class_activity_page, prev_class_activity_page);
+
+    prev_class_activity_page = class_activity_page;
+    class_activity_page = {};
+  }, 1000 * 60 * 10);
 
   await browser.close();
 })();
