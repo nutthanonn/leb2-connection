@@ -1,8 +1,9 @@
 import puppeteer from "puppeteer";
 import dotenv from "dotenv";
-import chromium from "chrome-aws-lambda";
 
 //@ts-ignore
+import PCR from "puppeteer-chromium-resolver";
+
 import { onChange } from "./helpers/checkOnChange";
 import { makeCurrentClassActivity } from "./helpers/makeCurrentClassActivity";
 
@@ -17,11 +18,12 @@ interface class_activity_pageType {
 dotenv.config();
 
 (async () => {
+  const stats = await PCR();
+
+  process.env.PUPPETEER_EXECUTABLE_PATH = stats.executablePath;
   const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath,
     headless: false,
+    executablePath: stats.executablePath,
   });
 
   const page = await browser.newPage();
