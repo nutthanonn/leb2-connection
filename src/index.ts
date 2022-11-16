@@ -21,7 +21,7 @@ dotenv.config();
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath,
-    headless: chromium.headless,
+    headless: false,
   });
 
   const page = await browser.newPage();
