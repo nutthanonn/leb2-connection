@@ -16,6 +16,7 @@ dotenv.config();
 (async () => {
   const browser = await puppeteer.launch({
     headless: true,
+    ignoreDefaultArgs: ["--disable-extensions"],
   });
 
   const page = await browser.newPage();
