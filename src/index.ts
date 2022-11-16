@@ -1,4 +1,4 @@
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
 import dotenv from "dotenv";
 
 //@ts-ignore
@@ -24,6 +24,7 @@ dotenv.config();
   const browser = await puppeteer.launch({
     headless: false,
     executablePath: stats.executablePath,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
     env: {
       DISPLAY: ":10.0",
     },
