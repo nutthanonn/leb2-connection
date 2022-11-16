@@ -1,4 +1,5 @@
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import { executablePath } from "puppeteer";
 import dotenv from "dotenv";
 import { onChange } from "./helpers/checkOnChange";
 import { makeCurrentClassActivity } from "./helpers/makeCurrentClassActivity";
@@ -16,7 +17,8 @@ dotenv.config();
 (async () => {
   const browser = await puppeteer.launch({
     headless: true,
-    ignoreDefaultArgs: ["--disable-extensions"],
+    executablePath: executablePath(),
+    args: ["--no-sandbox"],
   });
 
   const page = await browser.newPage();
