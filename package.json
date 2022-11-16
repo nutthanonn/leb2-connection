@@ -8,6 +8,9 @@
     "dev": "nodemon --exec ts-node src/index.ts",
     "postinstall": "node node_modules/puppeteer/install.js"
   },
+  "engines": {
+    "node": ">=14 <15"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
