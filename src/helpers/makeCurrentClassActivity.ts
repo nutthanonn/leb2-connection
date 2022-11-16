@@ -1,4 +1,4 @@
-import { Page } from "puppeteer-core";
+import { Page } from "puppeteer";
 
 interface class_activity_pageType {
   [key: string]: {
