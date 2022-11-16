@@ -19,7 +19,7 @@ dotenv.config();
 (async () => {
   const stats = await PCR();
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     executablePath: stats.executablePath,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
