@@ -24,6 +24,10 @@ dotenv.config();
   const browser = await puppeteer.launch({
     headless: false,
     executablePath: stats.executablePath,
+    env: {
+      TZ: "Asia/Tokyo",
+      DISPLAY: ":10.0",
+    },
   });
 
   const page = await browser.newPage();
