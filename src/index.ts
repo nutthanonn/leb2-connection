@@ -1,6 +1,8 @@
 import puppeteer from "puppeteer-core";
-import { executablePath } from "puppeteer";
 import dotenv from "dotenv";
+
+//@ts-ignore
+import PCR from "puppeteer-chromium-resolver";
 import { onChange } from "./helpers/checkOnChange";
 import { makeCurrentClassActivity } from "./helpers/makeCurrentClassActivity";
 
@@ -15,9 +17,10 @@ interface class_activity_pageType {
 dotenv.config();
 
 (async () => {
+  const stats = await PCR();
   const browser = await puppeteer.launch({
     headless: true,
-    executablePath: executablePath(),
+    executablePath: stats.executablePath,
     args: ["--no-sandbox"],
   });
 
