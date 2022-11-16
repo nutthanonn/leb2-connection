@@ -15,7 +15,6 @@ export const makeCurrentClassActivity = async (
   console.log("Checking for new assignment...");
   var class_activity_page: class_activity_pageType = {};
 
-  await page.goto(class_activity[0]);
   for (let i = 0; i < class_activity.length; i++) {
     await page.goto(class_activity[i], {
       timeout: 20000,
