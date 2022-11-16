@@ -25,7 +25,6 @@ dotenv.config();
     headless: false,
     executablePath: stats.executablePath,
     env: {
-      TZ: "Asia/Tokyo",
       DISPLAY: ":10.0",
     },
   });
